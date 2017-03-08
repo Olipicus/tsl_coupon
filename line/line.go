@@ -3,17 +3,21 @@ package line
 import (
 	"log"
 	"net/http"
+	"strings"
+
+	"code.olipicus.com/trueselect_coupon/config"
 
 	"github.com/line/line-bot-sdk-go/linebot"
 )
 
 //LineApp : struct
 type LineApp struct {
-	bot *linebot.Client
+	bot    *linebot.Client
+	config *config.Table
 }
 
 //NewLineApp : new line app
-func NewLineApp(channelSecret string, channelToken string) (*LineApp, error) {
+func NewLineApp(channelSecret, channelToken string, config *config.Table) (*LineApp, error) {
 	bot, err := linebot.New(
 		channelSecret,
 		channelToken,
@@ -22,7 +26,8 @@ func NewLineApp(channelSecret string, channelToken string) (*LineApp, error) {
 		return nil, err
 	}
 	return &LineApp{
-		bot: bot,
+		bot:    bot,
+		config: config,
 	}, nil
 }
 
@@ -57,7 +62,10 @@ func (app *LineApp) follow(event *linebot.Event) {
 
 	log.Println(profile.UserID)
 
-	app.replyText(event.ReplyToken, "หวัดดี")
+	msgTemplate, _ := app.config.GetString("coupon_message")
+	msg := strings.Replace(msgTemplate, "{coupon}", profile.UserID[:6], 1)
+
+	app.replyText(event.ReplyToken, msg)
 }
 
 func (app *LineApp) replyText(replyToken, text string) error {
