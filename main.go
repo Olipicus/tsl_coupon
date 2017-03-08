@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"code.olipicus.com/trueselect_coupon/config"
 	"code.olipicus.com/trueselect_coupon/line"
-	"code.truevisions.tv/services/config"
 )
 
 var configFile string
