@@ -1,0 +1,11 @@
+{
+ "Tasks": [
+  "go-vet",
+  "go-fmt",
+  "xc",
+  "archive"
+ ],
+ "BuildConstraints": "darwin,amd64 linux,386 linux,amd64",
+ "ResourcesInclude": "INSTALL*,config",
+ "ConfigVersion": "0.9"
+}
