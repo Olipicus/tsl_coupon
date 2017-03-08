@@ -24,7 +24,7 @@ func main() {
 	channelSecret, _ := config.GetString("channel_secret")
 	channelToken, _ := config.GetString("channel_token")
 
-	app, err := line.NewLineApp(channelSecret, channelToken)
+	app, err := line.NewLineApp(channelSecret, channelToken, config)
 	if err != nil {
 		log.Fatal(err)
 	}
