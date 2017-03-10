@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -41,5 +42,11 @@ func main() {
 }
 
 func verify(res http.ResponseWriter, req *http.Request) {
-	res.Write([]byte("OK"))
+	resp, err := http.Get("http://www.google.co.th")
+	if err != nil {
+		res.Write([]byte("Get google error"))
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	res.Write(body)
 }

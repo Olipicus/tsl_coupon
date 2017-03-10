@@ -1,6 +1,8 @@
 package line
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -60,12 +62,33 @@ func (app *LineApp) follow(event *linebot.Event) {
 		log.Fatal("Get Line Profile Error")
 	}
 
-	log.Println(profile.UserID)
+	if coupon, err := app.getCoupon(profile.UserID); err == nil {
+		msgTemplate, _ := app.config.GetString("coupon_message")
+		msg := strings.Replace(msgTemplate, "{coupon}", coupon, -1)
 
-	msgTemplate, _ := app.config.GetString("coupon_message")
-	msg := strings.Replace(msgTemplate, "{coupon}", profile.UserID[:6], 1)
+		app.replyText(event.ReplyToken, msg)
+	}
 
-	app.replyText(event.ReplyToken, msg)
+}
+
+func (app *LineApp) getCoupon(userID string) (string, error) {
+	url, _ := app.config.GetString("get_coupon_url")
+	url = strings.Replace(url, "{user_id}", userID, -1)
+
+	res, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var result resultCoupon
+	json.Unmarshal(body, &result)
+
+	return result.CouponCode, nil
 }
 
 func (app *LineApp) replyText(replyToken, text string) error {
